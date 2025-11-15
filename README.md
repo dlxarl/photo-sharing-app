@@ -1,75 +1,103 @@
-# 🧠 Zadanie kwalifikacyjne – Aplikacja webowa do zarządzania zdjęciami
+# UtoczkiShare - Photo Sharing Web Application
 
-## 🎯 Cel zadania
-Celem jest stworzenie prostej, ale bezpiecznej aplikacji webowej, umożliwiającej użytkownikom rejestrację, logowanie, przesyłanie, przeglądanie i udostępnianie zdjęć innym użytkownikom.
+This project is a secure web application built as a qualifying task for the Hack4Defence 2025 hackathon.
 
----
+It allows users to register, log in, upload, view, and share their photos with other users. The backend is built with Django & Django Rest Framework, and the frontend is a single-page application built with React and TypeScript.
 
-## 📋 Zakres funkcjonalny
-Aplikacja powinna umożliwiać:
-1. **Rejestrację nowych użytkowników** (z walidacją danych, np. unikalny e-mail, bezpieczne hasło).  
-2. **Logowanie użytkowników** (przy użyciu sesji lub tokenów JWT).  
-3. **Dodawanie zdjęć** – użytkownik może przesyłać zdjęcia (np. JPG/PNG), które są zapisywane po stronie serwera.  
-4. **Przeglądanie i pobieranie własnych zdjęć.**  
-5. **Udostępnianie zdjęć** – użytkownik może udostępnić wybrane zdjęcie innemu zarejestrowanemu użytkownikowi (tylko do podglądu).  
-6. **Bezpieczny dostęp do zasobów** – użytkownik nie może uzyskać dostępu do zdjęć, które do niego nie należą, chyba że zostały mu udostępnione.
+## Core Features
 
----
+  * **User Authentication**
+    Secure JWT-based authentication is used. Users can register with a unique username and email, and a password that is validated for strength. Login is handled by the `TokenObtainPairView` from the Simple JWT library.
 
-## 🔐 Wymagania bezpieczeństwa
-Aplikacja powinna uwzględniać zabezpieczenia przed typowymi zagrożeniami, w tym:
-- **IDOR (Insecure Direct Object Reference)**
-- **XSS (Cross-Site Scripting)**
-- **Bezpieczne przechowywanie haseł (np. hashowanie, hash + salt itp.)**
+  * **Photo Upload**
+    Authenticated users can upload image files via a `multipart/form-data` endpoint. The backend saves the file to the `media/uploads/` directory and links the `Photo` object to the currently logged-in user (`owner`).
 
----
+  * **Secure Media Access**
+    All media files are served through a protected API endpoint (`/api/media/`). This view checks if the requesting user is either the `owner` of the photo or if a `PhotoShare` object exists linking the photo to that user. If neither is true, a `403 Forbidden` error is returned.
 
-## 🧪 Testy automatyczne
-Należy przygotować zestaw **testów automatycznych**, które obejmują:
-- testy jednostkowe dla logiki aplikacji,  
-- testy integracyjne lub e2e dla głównych ścieżek użytkownika
+  * **Photo Sharing**
+    Users can share their own photos with other registered users by providing their email address. The backend validates that the email exists, belongs to a valid user, and is not the owner's own email. If valid, a `PhotoShare` entry is created to link the photo to the target user.
 
----
+  * **Photo Management & Feed**
+    The main gallery (`PhotoListCreateView`) displays a combined list of photos the user owns and photos shared with them. Users can delete their own photos via the `PhotoDetailView` (`DELETE /api/photos/<id>/`), which will also remove the file from the server.
 
-## 🧾 Kryteria oceny
-1. Poprawność i kompletność funkcjonalności  (20 pkt.)
-2. Zabezpieczenia aplikacji  (10 pkt.)
-3. Jakość i czytelność kodu  (10 pkt.)
-4. Zakres i jakość testów automatycznych (5 pkt.)  
-5. Intuicyjność interfejsu użytkownika (5 pkt.)
+## Security Implementation
 
----
+The application was built with security as a priority, focusing on requirements from the qualifying task.
 
-## 🇬🇧 English version
+  * **IDOR Protection**: All endpoints for viewing, deleting, and sharing photos are scoped to the authenticated user. A user cannot access or manage another user's photos by guessing IDs.
+  * **Secure Password Storage**: All user passwords are hashed using Django's default password hashing system.
+  * **Input Validation**: Serializers on the backend validate all user input, such as ensuring unique usernames/emails, strong passwords, and that shared-to users exist.
 
-### 🎯 Goal
-Build a small but secure web application that allows users to register, log in, upload, view, and share photos with other users.
+## Tech Stack
 
-### 📋 Functional Requirements
-The application should support:
-1. **User registration** with data validation (unique email, strong password).  
-2. **User login** using sessions or JWT tokens.  
-3. **Photo upload** – users can upload images stored on the server.  
-4. **Viewing and downloading own photos.**  
-5. **Photo sharing** – users can share selected photos with other registered users (view-only).  
-6. **Secure resource access** – users cannot access photos they do not own unless shared with them.
+  * **Backend**: Django, Django Rest Framework, Simple JWT.
+  * **Database**: PostgreSQL.
+  * **Frontend**: React, TypeScript, Vite, Axios.
+  * **Testing**: Django APITestCase.
 
-### 🔐 Security Requirements
-Include protection against:
-- **IDOR**
-- **XSS**
-- **Secure password storage (hashing, hashing + salt etc.)**
+## Setup and Running Instructions
 
-### 🧪 Testing
-Provide automated tests covering:
-- application logic (unit tests),  
-- main user flows (integration/e2e tests).
+### Backend (Django)
 
-### 🧾 Evaluation Criteria
-1. Functional completeness and correctness  (20 pts)
-2. Security implementation  (10 pts)
-3. Code quality and structure  (10 pts)
-4. Automated test coverage  (5 pts)
-5. UI usability  (5 pts)
+1.  **Navigate to the backend directory:**
+    ```bash
+    cd photos_app
+    ```
+2.  **Create and activate a virtual environment:**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3.  **Install dependencies:**
+    (Create a `requirements.txt` file with the following content, then run `pip install -r requirements.txt`)
+    ```
+    django
+    djangorestframework
+    djangorestframework-simplejwt
+    django-cors-headers
+    psycopg2-binary
+    gunicorn
+    Pillow
+    ```
+4.  **Configure Database:**
+    Open `photos_app/photos_app/settings.py` and update the `DATABASES` section with your PostgreSQL credentials.
+5.  **Run migrations:**
+    ```bash
+    python manage.py migrate
+    ```
+6.  **Run the server:**
+    ```bash
+    python manage.py runserver
+    ```
 
----
+### Frontend (React)
+
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd photos_app/web
+    ```
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Configure Environment:**
+    Create a `.env` file in the `photos_app/web` directory. Add your backend API address:
+    ```
+    VITE_API_URL=http://127.0.0.1:8000/api
+    ```
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+
+## Automated Tests
+
+To run the full suite of backend integration and security tests:
+
+1.  Navigate to the `photos_app` directory.
+2.  Ensure your virtual environment is activated.
+3.  Run the test command:
+    ```bash
+    python manage.py test
+    ```
