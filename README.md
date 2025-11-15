@@ -1,3 +1,5 @@
+![UtoczkiShare Banner](https://repository-images.githubusercontent.com/1096744931/07ce89fd-8728-49cc-b650-0dca64c90fca)
+
 # UtoczkiShare - Photo Sharing Web Application
 
 This project is a secure web application built as a qualifying task for the Hack4Defence 2025 hackathon.
