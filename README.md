@@ -24,7 +24,7 @@ It allows users to register, log in, upload, view, and share their photos with o
     The main gallery (`PhotoListCreateView`) displays a combined list of photos the user owns and photos shared with them. Users can delete their own photos via the `PhotoDetailView` (`DELETE /api/photos/<id>/`), which will also remove the file from the server.
 
     ![Login Page](https://i.postimg.cc/3rdLfngH/Screenshot-2025-11-15-at-23-35-29.png)
-    ![Main Page](https://i.ibb.co/93Z4Q3Tb/Screenshot-2025-11-15-at-23-34-31.png)
+    ![Main Page](https://i.postimg.cc/pX5gW8kN/Screenshot-2025-11-15-at-23-34-31.png)
 
 ## Security Implementation
 
